@@ -1,0 +1,154 @@
+// =====================================================================
+//  NIS2_REGISTRY — Modello ER in formato DBML
+//
+//  COME OTTENERE IL DIAGRAMMA ER (immagine):
+//    1. Aprire https://dbdiagram.io
+//    2. Incollare questo file nell'editor di sinistra
+//    3. Il diagramma ER viene generato automaticamente a destra
+//    4. Export > PNG / PDF / SVG  per ottenere l'immagine da inserire
+//       nella relazione e nella documentazione del repository
+// =====================================================================
+
+Table Organizzazione {
+  org_id integer [pk, increment]
+  codice_fiscale varchar [unique, not null]
+  denominazione varchar [not null]
+  settore_nis varchar [not null]
+  categoria varchar [not null, note: 'essenziale | importante']
+  data_registrazione_acn date [not null]
+  created_at timestamp
+}
+
+Table Assets {
+  asset_id integer [pk, increment]
+  org_id integer [not null, ref: > Organizzazione.org_id]
+  asset_name varchar [not null]
+  asset_type varchar [not null]
+  criticality_level smallint [not null, note: '1..5']
+  impatto_riservatezza varchar [note: 'alto|medio|basso']
+  impatto_integrita varchar
+  impatto_disponibilita varchar
+  ip_address varchar
+  stato varchar [not null, note: 'attivo|dismesso|sospeso']
+  in_perimetro_nis boolean [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table Services {
+  service_id integer [pk, increment]
+  org_id integer [not null, ref: > Organizzazione.org_id]
+  service_name varchar [not null]
+  description text
+  sla numeric [note: 'percentuale disponibilità']
+  rto_ore integer
+  rpo_ore integer
+  stato varchar [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table Asset_Service {
+  asset_id integer [ref: > Assets.asset_id]
+  service_id integer [ref: > Services.service_id]
+  tipo_dipendenza varchar [not null]
+  criticita_dip smallint
+  indexes {
+    (asset_id, service_id) [pk]
+  }
+}
+
+Table Suppliers {
+  supplier_id integer [pk, increment]
+  org_id integer [not null, ref: > Organizzazione.org_id]
+  supplier_name varchar [not null]
+  criticality_level smallint [not null]
+  contact_info text
+  paese varchar [note: 'ISO 3166-1 alpha-2']
+  soggetto_nis2 boolean
+  created_at timestamp
+}
+
+Table Dependencies {
+  dependency_id integer [pk, increment]
+  asset_id integer [not null, ref: > Assets.asset_id]
+  supplier_id integer [not null, ref: > Suppliers.supplier_id]
+  dependency_type varchar [not null]
+  data_inizio date
+  data_fine date
+}
+
+Table Responsibilities {
+  responsible_id integer [pk, increment]
+  org_id integer [not null, ref: > Organizzazione.org_id]
+  asset_id integer [ref: > Assets.asset_id]
+  responsible_name varchar [not null]
+  role varchar [not null]
+  contact_info varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table Security_Measures {
+  measure_id integer [pk, increment]
+  asset_id integer [not null, ref: > Assets.asset_id]
+  nome_misura varchar [not null]
+  area_nis varchar
+  stato_attuazione varchar [not null]
+  data_attuazione date
+  created_at timestamp
+}
+
+Table Incidents {
+  incident_id integer [pk, increment]
+  org_id integer [not null, ref: > Organizzazione.org_id]
+  asset_id integer [ref: > Assets.asset_id]
+  descrizione text [not null]
+  gravita smallint [note: '1..5']
+  data_rilevazione timestamp [not null]
+  data_notifica_acn timestamp
+  stato varchar [not null]
+}
+
+// --- Tabelle di storico (pattern SCD Type 2) -------------------------
+
+Table Assets_History {
+  history_id integer [pk, increment]
+  asset_id integer
+  org_id integer
+  asset_name varchar
+  asset_type varchar
+  criticality_level smallint
+  impatto_riservatezza varchar
+  impatto_integrita varchar
+  impatto_disponibilita varchar
+  stato varchar
+  in_perimetro_nis boolean
+  archived_at timestamp
+  operation varchar [note: 'U|D']
+  modified_by varchar [note: 'CURRENT_USER — utente DB che ha eseguito la modifica']
+}
+
+Table Services_History {
+  history_id integer [pk, increment]
+  service_id integer
+  org_id integer
+  service_name varchar
+  sla numeric
+  stato varchar
+  archived_at timestamp
+  operation varchar
+  modified_by varchar [note: 'CURRENT_USER — utente DB che ha eseguito la modifica']
+}
+
+Table Responsibilities_History {
+  history_id integer [pk, increment]
+  responsible_id integer
+  org_id integer
+  asset_id integer
+  responsible_name varchar
+  role varchar
+  archived_at timestamp
+  operation varchar
+  modified_by varchar [note: 'CURRENT_USER — utente DB che ha eseguito la modifica']
+}
