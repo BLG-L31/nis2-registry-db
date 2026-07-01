@@ -327,7 +327,9 @@ CREATE TRIGGER responsibility_versioning
 --  VISTA DI ESPORTAZIONE  ACN_EXPORT_VIEW
 -- =====================================================================
 
-CREATE OR REPLACE VIEW ACN_EXPORT_VIEW AS
+DROP VIEW IF EXISTS ACN_EXPORT_VIEW;
+
+CREATE VIEW ACN_EXPORT_VIEW AS
 SELECT
     o.codice_fiscale                 AS cf_organizzazione,
     o.denominazione                  AS organizzazione,
@@ -338,19 +340,34 @@ SELECT
     a.impatto_riservatezza           AS cia_riservatezza,
     a.impatto_integrita              AS cia_integrita,
     a.impatto_disponibilita          AS cia_disponibilita,
-    COALESCE(s.service_name, '')     AS servizio_collegato,
-    COALESCE(sup.supplier_name, '')  AS fornitore,
-    COALESCE(sup.paese, '')          AS paese_fornitore,
-    COALESCE(r.responsible_name, '') AS responsabile,
-    COALESCE(r.role, '')             AS ruolo_responsabile,
-    COALESCE(r.contact_info, '')     AS contatto_responsabile
+    COALESCE(svc.lista_servizi, '')          AS servizio_collegato,
+    COALESCE(forn.lista_fornitori, '')       AS fornitore,
+    COALESCE(forn.lista_paesi, '')           AS paese_fornitore,
+    COALESCE(resp.lista_responsabili, '')    AS responsabile,
+    COALESCE(resp.lista_ruoli, '')           AS ruolo_responsabile,
+    COALESCE(resp.lista_contatti, '')        AS contatto_responsabile
 FROM Organizzazione o
-JOIN Assets a               ON a.org_id        = o.org_id
-LEFT JOIN Asset_Service ase ON ase.asset_id    = a.asset_id
-LEFT JOIN Services s        ON s.service_id    = ase.service_id
-LEFT JOIN Dependencies d    ON d.asset_id      = a.asset_id
-LEFT JOIN Suppliers sup     ON sup.supplier_id = d.supplier_id
-LEFT JOIN Responsibilities r ON r.asset_id     = a.asset_id
+JOIN Assets a ON a.org_id = o.org_id
+LEFT JOIN (
+  SELECT as_.asset_id, string_agg(s.service_name, '; ') AS lista_servizi
+  FROM Asset_Service as_ JOIN Services s ON s.service_id = as_.service_id
+  GROUP BY as_.asset_id
+) svc ON svc.asset_id = a.asset_id
+LEFT JOIN (
+  SELECT d.asset_id,
+         string_agg(sup.supplier_name, '; ') AS lista_fornitori,
+         string_agg(sup.paese, '; ')          AS lista_paesi
+  FROM Dependencies d JOIN Suppliers sup ON sup.supplier_id = d.supplier_id
+  GROUP BY d.asset_id
+) forn ON forn.asset_id = a.asset_id
+LEFT JOIN (
+  SELECT r.asset_id,
+         string_agg(r.responsible_name, '; ') AS lista_responsabili,
+         string_agg(r.role, '; ')              AS lista_ruoli,
+         string_agg(r.contact_info, '; ')       AS lista_contatti
+  FROM Responsibilities r
+  GROUP BY r.asset_id
+) resp ON resp.asset_id = a.asset_id
 WHERE a.in_perimetro_nis = TRUE
 ORDER BY o.denominazione, a.criticality_level DESC, a.asset_name;
 
