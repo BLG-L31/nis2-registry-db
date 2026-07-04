@@ -11,19 +11,14 @@ Project Work — Corso di Laurea in Informatica per le Aziende Digitali (L-31).
 ## Struttura del repository
 
 ```
-repo_nis2/
-├── schema/
-│   └── 01_schema_completo.sql      Schema DDL: 12 tabelle, vincoli, indici,
-│                                   trigger di versioning, vista di export
-├── data/
-│   └── 02_dati_test.sql            Dataset simulato (3 organizzazioni)
-├── queries/
-│   └── 03_query_estrazione.sql     Query per le sezioni del profilo + export CSV
-├── scripts/
-│   └── valida_e_esporta.py         Validazione integrità (psycopg2) + export CSV
-└── docs/
-    ├── registro_nis2.dbml          Sorgente del diagramma ER (per dbdiagram.io)
-    └── README.md                   Questo file
+nis2-registry-db/
+├── 01_schema_completo.sql      Schema DDL: 12 tabelle, vincoli, indici,
+│                               trigger di versioning, vista di export
+├── 02_dati_test.sql            Dataset simulato (3 organizzazioni)
+├── 03_query_estrazione.sql     Query per le sezioni del profilo + export CSV
+├── valida_e_esporta.py         Validazione integrità (psycopg2) + export CSV
+├── registro_nis2.dbml          Sorgente del diagramma ER (per dbdiagram.io)
+└── README.md                   Questo file
 ```
 
 ---
@@ -49,19 +44,19 @@ CREATE DATABASE nis2_registry OWNER nis2_user;
 ### 2. Creare lo schema (tabelle, vincoli, indici, trigger, vista)
 
 ```bash
-psql -U nis2_user -d nis2_registry -f schema/01_schema_completo.sql
+psql -U nis2_user -d nis2_registry -f 01_schema_completo.sql
 ```
 
 ### 3. Popolare il dataset di test
 
 ```bash
-psql -U nis2_user -d nis2_registry -f data/02_dati_test.sql
+psql -U nis2_user -d nis2_registry -f 02_dati_test.sql
 ```
 
 ### 4. Eseguire le query di estrazione
 
 ```bash
-psql -U nis2_user -d nis2_registry -f queries/03_query_estrazione.sql
+psql -U nis2_user -d nis2_registry -f 03_query_estrazione.sql
 ```
 
 ### 5. (Opzionale) Validazione automatica ed export via Python
@@ -82,7 +77,7 @@ Il diagramma ER è mantenuto come codice nel file `docs/registro_nis2.dbml`
 (approccio *diagram-as-code*: il diagramma è versionato insieme allo schema).
 
 1. Aprire <https://dbdiagram.io>
-2. Incollare il contenuto di `docs/registro_nis2.dbml`
+2. Incollare il contenuto di `registro_nis2.dbml`
 3. Il diagramma viene generato automaticamente
 4. `Export` → PNG / PDF / SVG per ottenere l'immagine
 
