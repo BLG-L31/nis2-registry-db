@@ -63,7 +63,7 @@ psql -U nis2_user -d nis2_registry -f 03_query_estrazione.sql
 
 ```bash
 pip install psycopg2-binary pandas
-python scripts/valida_e_esporta.py
+python valida_e_esporta.py
 ```
 
 Lo script esegue i controlli di integrità/compliance e genera il file
@@ -73,7 +73,7 @@ Lo script esegue i controlli di integrità/compliance e genera il file
 
 ## Come ottenere il diagramma ER (immagine)
 
-Il diagramma ER è mantenuto come codice nel file `docs/registro_nis2.dbml`
+Il diagramma ER è mantenuto come codice nel file `registro_nis2.dbml`
 (approccio *diagram-as-code*: il diagramma è versionato insieme allo schema).
 
 1. Aprire <https://dbdiagram.io>
