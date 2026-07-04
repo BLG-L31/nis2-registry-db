@@ -58,9 +58,7 @@ ORDER  BY i.data_rilevazione DESC;
 -- Da eseguire dal client psql. \COPY scrive un file sul disco LOCALE.
 -- Sostituire il codice fiscale con quello dell'organizzazione desiderata.
 
-\COPY (SELECT * FROM ACN_EXPORT_VIEW WHERE cf_organizzazione = '01234567890') \
-  TO 'profilo_acn_energiaitalia.csv' \
-  WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',', ENCODING 'UTF8');
+\COPY (SELECT * FROM ACN_EXPORT_VIEW WHERE cf_organizzazione = '01234567890') TO 'profilo_acn_energiaitalia.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',', ENCODING 'UTF8');
 
 -- Per esportare TUTTE le organizzazioni in un unico file:
 -- \COPY (SELECT * FROM ACN_EXPORT_VIEW) TO 'profilo_acn_completo.csv'
