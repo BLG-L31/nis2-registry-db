@@ -79,5 +79,5 @@ INSERT INTO Security_Measures (asset_id, nome_misura, area_nis, stato_attuazione
 
 -- ---- INCIDENTI -------------------------------------------------------
 INSERT INTO Incidents (org_id, asset_id, descrizione, gravita, data_rilevazione, data_notifica_acn, stato) VALUES
-(1, 4, 'Tentativo di accesso non autorizzato al portale web', 3, '2025-03-10 08:30+01', '2025-03-10 14:00+01', 'chiuso'),
-(2, 6, 'Indisponibilità temporanea biglietteria',            2, '2025-04-02 19:15+02', NULL,                  'in_gestione');
+(1, 4, 'Tentativo di accesso non autorizzato al portale web', 3, '2026-03-10 08:30+01', '2026-03-10 14:00+01', 'chiuso'),
+(2, 6, 'Indisponibilità temporanea biglietteria',            2, '2026-04-02 19:15+02', NULL,                  'in_gestione');
